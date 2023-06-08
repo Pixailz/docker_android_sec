@@ -6,7 +6,6 @@ RUN			apk add --upgrade --progress --virtual base \
 				alpine-sdk \
 				ruby-dev \
 				postgresql \
-				postgresql-dev \
 				perl \
 				openrc \
 				ncurses && \
@@ -29,8 +28,7 @@ FROM		base			as packed
 
 ARG			USER_NAME \
 			USER_PASS \
-			USER_SHELL \
-			PGDATA
+			USER_SHELL
 
 RUN			adduser -h "/home/${USER_NAME}" -s "${USER_SHELL}" "${USER_NAME}" -D && \
 			printf "${USER_NAME}:${USER_PASS}\n" | chpasswd 2>/dev/null && \
@@ -39,12 +37,9 @@ RUN			adduser -h "/home/${USER_NAME}" -s "${USER_SHELL}" "${USER_NAME}" -D && \
 			chmod -R a+w /usr/bin && \
 			chmod -R a+w /opt/metasploit-framework
 
-RUN			mkdir -p /run/openrc && \
-			touch /run/openrc/softlevel && \
-			mkdir -p "${PGDATA}" && \
-			chmod 755 "${PGDATA}" && \
-			chown -R postgres "${PGDATA}" && \
-			rc-service postgresql setup
+# RUN			mkdir -p /run/openrc && \
+# 			touch /run/openrc/softlevel && \
+
 
 USER		"${USER_NAME}"
 

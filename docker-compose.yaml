@@ -1,5 +1,15 @@
 version: "3.9"
 
+################################################################################
+# DEFAULT CONF https://stackoverflow.com/a/65522511
+
+x-healthcheck_conf: &healthcheck_conf
+      interval: 1s
+      timeout: 1s
+      retries: 50
+
+################################################################################
+
 services:
   ##############################################################################
   # MAIN
@@ -12,12 +22,13 @@ services:
         - USER_NAME=${USER_NAME}
         - USER_PASS=${USER_PASS}
         - USER_SHELL=${SHELL}
-        - PGDATA=/var/lib/postgresql/data
+    depends_on:
+      postgresql:
+        condition: service_healthy
     environment:
       - USER_NAME=${USER_NAME}
       - USER_PASS=${USER_PASS}
       - DB_NAME=${DB_NAME}
-      - PGDATA=/var/lib/postgresql/data
     networks:
       main_net:
         ipv4_address: "13.37.42.10"
@@ -27,6 +38,33 @@ services:
     # healthcheck:
     #   test: [ "CMD", "pgwrep", "mysqld" ]
     #   << : *healthcheck_conf
+  #
+  ##############################################################################
+
+  ##############################################################################
+  # POSTGRESQL
+  postgresql:
+    container_name: postgresql
+    build:
+      context: "./postgresql"
+      target: "packed"
+      args:
+        - USER_NAME=${USER_NAME}
+        - USER_PASS=${USER_PASS}
+        - PGDATA=/var/lib/postgresql/data
+    environment:
+      - USER_NAME=${USER_NAME}
+      - USER_PASS=${USER_PASS}
+      - DB_NAME=${DB_NAME}
+      - PGDATA=/var/lib/postgresql/data
+    networks:
+      main_net:
+        ipv4_address: "13.37.42.11"
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pgrep", "postgresql" ]
+      << : *healthcheck_conf
   #
   ##############################################################################
 
@@ -66,5 +104,15 @@ volumes:
       type: "none"
       o: "bind"
       device: ./Shared/ruby
+  #
+  ##############################################################################
+  ##############################################################################
+  # postgresql data
+  postgresql:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: ./Shared/db
   #
   ##############################################################################

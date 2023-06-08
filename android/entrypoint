@@ -20,17 +20,6 @@ function	msf_link()
 msf_build
 msf_link
 
-function	db_configure()
-{
-	psql -U postgres -c "CREATE USER ${USER_NAME} WITH PASSWORD '"${USER_PASS}"' ;"
-	psql -U postgres -c "CREATE DATABASE ${DB_NAME} OWNER ${USER_NAME};"
-	psql -U postgres -c "grant ALL ON DATABASE ${DB_NAME} TO ${USER_NAME};"
-}
-
-rc-service -v postgresql restart
-
-db_configure
-
 <<EOF cat >"/home/${USER_NAME}/.msf4/database.yml"
 production:
   adapter: postgresql
