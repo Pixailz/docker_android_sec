@@ -23,6 +23,7 @@ services:
         ipv4_address: "13.37.42.10"
     volumes:
       - shared_dir:/Shared
+      - ruby:/usr/lib/ruby
     # healthcheck:
     #   test: [ "CMD", "pgwrep", "mysqld" ]
     #   << : *healthcheck_conf
@@ -55,5 +56,15 @@ volumes:
       type: "none"
       o: "bind"
       device: ./Shared
+  #
+  ##############################################################################
+  ##############################################################################
+  # Shared folder
+  ruby:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: ./Shared/ruby
   #
   ##############################################################################

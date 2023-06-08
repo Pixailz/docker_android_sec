@@ -6,7 +6,7 @@ ENV_FILE			:= .env
 
 # VOLUMES DIR
 SHARE_BASE			:= .
-SHARE_DIR			:= Shared/gems
+SHARE_DIR			:= Shared/ruby
 
 SHARE_DIR			:= $(addprefix $(SHARE_BASE)/,$(SHARE_DIR))
 

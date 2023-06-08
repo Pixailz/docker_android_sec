@@ -5,4 +5,5 @@ Little docker to embed some nasty payload onto apks :p
 
 ## TODO
 
-1. init db
+1. check postgresql installation
+1. fix persistence on msf (very long to build, don't to build it every time)

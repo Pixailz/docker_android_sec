@@ -1,6 +1,5 @@
 FROM		alpine:latest	as	base
 
-
 			# BASE PACKAGE
 RUN			apk add --upgrade --progress --virtual base \
 				bash \
@@ -9,6 +8,7 @@ RUN			apk add --upgrade --progress --virtual base \
 				postgresql \
 				postgresql-dev \
 				perl \
+				openrc \
 				ncurses && \
 			# BUILD DEPENDENCIES NEEDED
 			apk add --progress --virtual deps \
@@ -16,7 +16,8 @@ RUN			apk add --upgrade --progress --virtual base \
 				libpcap-dev && \
 			# DEBUG
 			apk add --progress --virtual debug \
-				sudo && \
+				sudo \
+			&& rm -f /var/cache/apk/* && \
 			# BUILD GEM
 			gem install --no-document wirble sqlite3 bundler
 
@@ -35,11 +36,15 @@ RUN			adduser -h "/home/${USER_NAME}" -s "${USER_SHELL}" "${USER_NAME}" -D && \
 			printf "${USER_NAME}:${USER_PASS}\n" | chpasswd 2>/dev/null && \
 			echo "${USER_NAME} ALL=(ALL:ALL) ALL" >> /etc/sudoers && \
 			chmod -R a+w /usr/lib/ruby && \
-			chmod -R a+w /usr/bin
+			chmod -R a+w /usr/bin && \
+			chmod -R a+w /opt/metasploit-framework
 
-RUN			mkdir -p "${PGDATA}" && \
+RUN			mkdir -p /run/openrc && \
+			touch /run/openrc/softlevel && \
+			mkdir -p "${PGDATA}" && \
 			chmod 755 "${PGDATA}" && \
-			chown -R postgres "${PGDATA}"
+			chown -R postgres "${PGDATA}" && \
+			rc-service postgresql setup
 
 USER		"${USER_NAME}"
 
