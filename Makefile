@@ -5,8 +5,9 @@ CURL				:= curl -L -\#
 ENV_FILE			:= .env
 
 # VOLUMES DIR
-SHARE_BASE			:= .
-SHARE_DIR			:= Shared/ruby
+SHARE_BASE			:= ./Shared
+SHARE_DIR			:= ruby \
+					   db
 
 SHARE_DIR			:= $(addprefix $(SHARE_BASE)/,$(SHARE_DIR))
 
@@ -37,7 +38,7 @@ ENTRYPOINT			:= --entrypoint $(ENTRY)
 endif
 
 RE_STR				?=
-TARGET				?=  android
+TARGET				?= android
 
 ESC					:=\x1b[
 PRI					:=$(ESC)37m

@@ -7,7 +7,6 @@ RUN			apk add --upgrade --progress --virtual base \
 				ruby-dev \
 				postgresql \
 				perl \
-				openrc \
 				ncurses && \
 			# BUILD DEPENDENCIES NEEDED
 			apk add --progress --virtual deps \

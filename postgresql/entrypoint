@@ -19,8 +19,12 @@ PATH="${HOME}/.local/bin:${PATH}"
 # msfconsole -x "db_connect ${USER_NAME}:${USER_PASS}@127.0.0.1:5432/${DB_NAME}"
 # msfconsole -x "db_status"
 
-if [ ${#} != "0" ]; then
-	exec ${@}
-else
-	bash
-fi
+# if [ ${#} != "0" ]; then
+# 	exec ${@}
+# else
+# 	bash
+# fi
+
+while [ 1 ]; do
+	sleep 10
+done
