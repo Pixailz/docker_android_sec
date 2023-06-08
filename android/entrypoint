@@ -8,7 +8,6 @@ function	msf_build()
 	mkdir -p /home/${USER_NAME}/.bundle
 
 	cd /opt/metasploit-framework && \
-		bundle config set --local path '/opt/metasploit-framework' && \
 		bundle install
 }
 
@@ -27,7 +26,9 @@ function	db_configure()
 	psql -U postgres -c "CREATE DATABASE ${DB_NAME} OWNER ${USER_NAME};"
 	psql -U postgres -c "grant ALL ON DATABASE ${DB_NAME} TO ${USER_NAME};"
 }
-psql -U postgres -c "CREATE USER pix WITH PASSWORD 'pass' ;"
+
+rc-service -v postgresql restart
+
 db_configure
 
 <<EOF cat >"/home/${USER_NAME}/.msf4/database.yml"
@@ -44,8 +45,8 @@ EOF
 
 PATH="${HOME}/.local/bin:${PATH}"
 
-msfconsole -x "db_connect ${USER_NAME}:${USER_PASS}@127.0.0.1:5432/${DB_NAME}"
-msfconsole -x "db_status"
+# msfconsole -x "db_connect ${USER_NAME}:${USER_PASS}@127.0.0.1:5432/${DB_NAME}"
+# msfconsole -x "db_status"
 
 if [ ${#} != "0" ]; then
 	exec ${@}
