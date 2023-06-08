@@ -1,2 +1,8 @@
 # never ever push this file
 .env
+
+# Shared folder
+Shared
+
+# Downloaded thing
+android/msf
