@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  ##############################################################################
+  # MAIN
+  android:
+    container_name: android
+    build:
+      context: "./android"
+      target: "packed"
+      args:
+        - USER_NAME=${USER_NAME}
+        - USER_PASS=${USER_PASS}
+        - USER_SHELL=${SHELL}
+        - PGDATA=/var/lib/postgresql/data
+    environment:
+      - USER_NAME=${USER_NAME}
+      - USER_PASS=${USER_PASS}
+      - DB_NAME=${DB_NAME}
+      - PGDATA=/var/lib/postgresql/data
+    networks:
+      main_net:
+        ipv4_address: "13.37.42.10"
+    volumes:
+      - shared_dir:/Shared
+    # healthcheck:
+    #   test: [ "CMD", "pgwrep", "mysqld" ]
+    #   << : *healthcheck_conf
+  #
+  ##############################################################################
+
+networks:
+  ##############################################################################
+  # MAIN INTERNAL NETWORK
+  main_net:
+    name: main_net
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: main_net
+    ipam:
+      driver: default
+      config:
+        - subnet: 13.37.42.0/27
+          ip_range: 13.37.42.0/27
+          gateway: 13.37.42.1
+  #
+  ##############################################################################
+
+volumes:
+  ##############################################################################
+  # Shared folder
+  shared_dir:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: ./Shared
+  #
+  ##############################################################################
