@@ -2,19 +2,16 @@ FROM		alpine:latest	as	base
 
 			# BASE PACKAGE
 RUN			apk add --upgrade --progress --virtual base \
+				sudo \
 				bash \
 				alpine-sdk \
 				ruby-dev \
-				postgresql \
 				perl \
 				ncurses && \
 			# BUILD DEPENDENCIES NEEDED
 			apk add --progress --virtual deps \
 				libpq-dev \
-				libpcap-dev && \
-			# DEBUG
-			apk add --progress --virtual debug \
-				sudo \
+				libpcap-dev \
 			&& rm -f /var/cache/apk/* && \
 			# BUILD GEM
 			gem install --no-document wirble sqlite3 bundler
@@ -35,10 +32,6 @@ RUN			adduser -h "/home/${USER_NAME}" -s "${USER_SHELL}" "${USER_NAME}" -D && \
 			chmod -R a+w /usr/lib/ruby && \
 			chmod -R a+w /usr/bin && \
 			chmod -R a+w /opt/metasploit-framework
-
-# RUN			mkdir -p /run/openrc && \
-# 			touch /run/openrc/softlevel && \
-
 
 USER		"${USER_NAME}"
 
