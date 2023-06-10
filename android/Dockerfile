@@ -7,6 +7,7 @@ RUN			apk add --upgrade --progress --virtual base \
 				alpine-sdk \
 				ruby-dev \
 				perl \
+				openjdk17-jdk \
 				ncurses && \
 			# BUILD DEPENDENCIES NEEDED
 			apk add --progress --virtual deps \
@@ -35,9 +36,8 @@ RUN			adduser -h "/home/${USER_NAME}" -s "${USER_SHELL}" "${USER_NAME}" -D && \
 
 USER		"${USER_NAME}"
 
-COPY		.bashrc "/home/${USER_NAME}"
-COPY		.bash_aliases "/home/${USER_NAME}"
-COPY		.nerd_font "/home/${USER_NAME}"
+COPY		--chown=root:root bash /home/${USER_NAME}
+COPY		--chown=root:root --chmod=755 apktool /usr/local/bin
 
 COPY		--chown=root:root entrypoint /run/entrypoint
 ENTRYPOINT	[ "/run/entrypoint" ]

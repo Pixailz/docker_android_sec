@@ -20,51 +20,23 @@ services:
       target: "packed"
       args:
         - USER_NAME=${USER_NAME}
-        - USER_PASS=${USER_PASS}
+        - USER_PASS=${USER_PASS:-pass}
         - USER_SHELL=${SHELL}
-    depends_on:
-      postgresql:
-        condition: service_healthy
     environment:
       - USER_NAME=${USER_NAME}
-      - USER_PASS=${USER_PASS}
-      - DB_NAME=${DB_NAME}
+      - USER_PASS=${USER_PASS:-pass}
+      - LHOST=${LHOST:-localhost}
+      - LPORT=${LPORT:-4445}
+      - APK_TARGET=${APK_TARGET:-}
     networks:
       main_net:
-        ipv4_address: "13.37.42.10"
+        ipv4_address: "13.37.43.10"
     volumes:
       - shared_dir:/Shared
       - ruby:/usr/lib/ruby
     # healthcheck:
     #   test: [ "CMD", "pgwrep", "mysqld" ]
     #   << : *healthcheck_conf
-  #
-  ##############################################################################
-
-  ##############################################################################
-  # POSTGRESQL
-  postgresql:
-    container_name: postgresql
-    build:
-      context: "./postgresql"
-      target: "packed"
-      args:
-        - USER_NAME=${USER_NAME}
-        - USER_PASS=${USER_PASS}
-        - PGDATA=/var/lib/postgresql/data
-    environment:
-      - USER_NAME=${USER_NAME}
-      - USER_PASS=${USER_PASS}
-      - DB_NAME=${DB_NAME}
-      - PGDATA=/var/lib/postgresql/data
-    networks:
-      main_net:
-        ipv4_address: "13.37.42.11"
-    volumes:
-      - postgresql:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD", "pgrep", "postgresql" ]
-      << : *healthcheck_conf
   #
   ##############################################################################
 
@@ -79,9 +51,9 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 13.37.42.0/27
-          ip_range: 13.37.42.0/27
-          gateway: 13.37.42.1
+        - subnet: 13.37.43.0/27
+          ip_range: 13.37.43.0/27
+          gateway: 13.37.43.1
   #
   ##############################################################################
 
@@ -97,22 +69,12 @@ volumes:
   #
   ##############################################################################
   ##############################################################################
-  # Shared folder
+  # Ruby with gems
   ruby:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
       device: ./Shared/ruby
-  #
-  ##############################################################################
-  ##############################################################################
-  # postgresql data
-  postgresql:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: ./Shared/db
   #
   ##############################################################################

